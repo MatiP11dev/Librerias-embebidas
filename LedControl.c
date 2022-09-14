@@ -20,7 +20,7 @@ void LedControl_Proceso(LedControl_BaseTypedef *s);
  */
 void LedControl_Init(LedControl_BaseTypedef *s) {
 	s->ctrl = LED_CONTROL_LED_BLINK;
-	s->tiempo = HAL_GetTick();
+	s->tiempo = HAL_GetTick();//obtiene el valor del systick timer
 	s->estado = LED_CONTROL_ST_APAGADO_BLINK;
 	HAL_GPIO_WritePin(s->gpio_port, s->gpio_pin, s->gpio_state_off);//apagar
 }
@@ -33,12 +33,12 @@ void LedControl_Proceso(LedControl_BaseTypedef *s) {
 	case LED_CONTROL_ST_APAGADO_BLINK:
 		HAL_GPIO_WritePin(s->gpio_port, s->gpio_pin, s->gpio_state_off);
 		if (HAL_GetTick()-s->tiempo >= s->t1) {
-			s->estado = LED_CONTROL_ST_ENCENDIDO_BLINK;
+			s->estado = LED_CONTROL_ST_ENCENDIDO_BLINK;//cambia a estado de apagado del led parpadeo
 			s->tiempo = HAL_GetTick();
 		} else if (s->ctrl == LED_CONTROL_LED_ENCENDIDO) {
-			s->estado = LED_CONTROL_ST_ENCENDIDO;
+			s->estado = LED_CONTROL_ST_ENCENDIDO;//pasa al estado del led ecendido de forma constante
 		} else if (s->ctrl == LED_CONTROL_LED_APAGADO) {
-			s->estado = LED_CONTROL_ST_APAGADO;
+			s->estado = LED_CONTROL_ST_APAGADO;//pasa al estado del led apagado constantemente
 		}
 		break;
 	case LED_CONTROL_ST_ENCENDIDO_BLINK:
@@ -48,27 +48,27 @@ void LedControl_Proceso(LedControl_BaseTypedef *s) {
 			s->tiempo = HAL_GetTick();
 		}
 		  else if (s->ctrl == LED_CONTROL_LED_ENCENDIDO) {
-			s->estado = LED_CONTROL_ST_ENCENDIDO;
+			s->estado = LED_CONTROL_ST_ENCENDIDO;//pasa al estado del led ecendido de forma constante
 		} else if (s->ctrl == LED_CONTROL_LED_APAGADO) {
 			s->estado = LED_CONTROL_ST_APAGADO;
 		}
 		break;
 		case LED_CONTROL_ST_APAGADO:
-			HAL_GPIO_WritePin(s->gpio_port,s->gpio_pin, s->gpio_state_off);
+			HAL_GPIO_WritePin(s->gpio_port,s->gpio_pin, s->gpio_state_off);//funcion para setear el estado del puerto.
 			if(s->ctrl==LED_CONTROL_LED_BLINK){
 				s->estado=LED_CONTROL_ST_APAGADO_BLINK;
 			}
 			else if(s->ctrl==LED_CONTROL_LED_ENCENDIDO){
-				s->estado=LED_CONTROL_ST_ENCENDIDO;
+				s->estado=LED_CONTROL_ST_ENCENDIDO;//pasa al estado del led ecendido de forma constante
 			}
 		break;
 		case LED_CONTROL_ST_ENCENDIDO:
 			HAL_GPIO_WritePin(s->gpio_port,s->gpio_pin, s->gpio_state_on);
 			if(s->ctrl==LED_CONTROL_LED_BLINK){
-				  s->estado=LED_CONTROL_ST_APAGADO_BLINK;
+				  s->estado=LED_CONTROL_ST_APAGADO_BLINK;//cambia a estado de apagado del led parpadeo
 			}
 			else if(s->ctrl==LED_CONTROL_LED_APAGADO){
-			     s->estado=LED_CONTROL_ST_APAGADO;
+			     s->estado=LED_CONTROL_ST_APAGADO;//pasa al estado del led ecendido de forma constante
 			}
 		break;
 	default:
